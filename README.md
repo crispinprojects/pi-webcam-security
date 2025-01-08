@@ -39,7 +39,7 @@ Install a terminal text editor. I use the terminal editor [micro](https://micro-
 sudo apt install micro
 ```
 
-Install fswebcam using the command below. This application is used to capture webcam images.
+Install fswebcam using the command below. The program [fswebcam](https://github.com/fsphil/fswebcam) is used to generate images from a webcam. It captures a number of frames from any V4L or V4L2 compatible device and then averages them to reduce noise. V4L is short for [Video4Linux](https://en.wikipedia.org/wiki/Video4Linux) and is a collection of device drivers and an API for supporting realtime video capture on Linux systems and supports many USB webcams.
 
 ```
 sudo apt install fswebcam
@@ -71,7 +71,7 @@ Use the list block devices (lsblk) command to display information about block de
 lsblk
 ```
 
-You should see something like tha below.
+You should see something like that below.
 
 ```
 NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
@@ -177,7 +177,7 @@ This creates a mount point currently owned by the root user.  Now change the own
 sudo chown pi:pi /mnt/hd1
 ```
 
-Again substitute pi with you pi username.
+Again substitute pi with your pi username.
 
 The next step is to find the Universally Unique Identifier (UUID) for the USB drive.  In Linux, UUIDs are used to identify media storage devices, such as block devices and partitions.
 
@@ -193,7 +193,7 @@ The output should look like that shown below.
 /dev/sda1: UUID="9522b771-c365-4c93-b2c2-47e4529717b4" BLOCK_SIZE="4096" TYPE="ext4"
 ```
 
-Now edit the ftab configuration file to add an entry for the USB drive. In Linux, fstab  (short for file system table) controls how the file system and devices are mounted when the system boots. Copy the UUID number and open fstab as shown below.
+Now edit the fstab configuration file to add an entry for the USB drive. In Linux, fstab  (short for file system table) controls how the file system and devices are mounted when the system boots. Copy the UUID number for /dev/sda1 and open fstab as shown below.
 
 ```
 sudo micro /etc/fstab
@@ -205,7 +205,7 @@ Using the copied UUID add the following line to the bottom of the file not chang
 UUID =9522b771-c365-4c93-b2c2-47e4529717b4 /mnt/hd1 ext4    defaults    0   1
 ```
 
-Save and exit. Use the mount command as shown below to mount the hd1 list the block devices again.
+Save and exit. Use the mount command as shown below to mount the USB hard disk hd1 and then list all the block devices again.
 
 ```
 sudo mount -a
@@ -228,7 +228,7 @@ touch test.txt
 
 When you do this you will most likley get the following error "touch: cannot touch 'text.txt': Permission denied". To solve this we need to change access permissions.
 
-Use the cd command to move up to the mnt directory (see  example below) and then use chmod  to change the access permissions. In Linux, the command chmod 777 gives all users full permissions to a file or directory, including read, write, and execute. This can be done recursively using the -R option.
+Use the change directory cd command to move up to the mnt directory (see example below) and then use chmod to change the access permissions. In Linux, the command chmod 777 gives all users full permissions to a file or directory, including read, write, and execute. This can be done recursively using the -R option.
 
 ```
 cd ..
@@ -238,7 +238,7 @@ cd hd1
 touch test.txt
 ```
 
-Now when you do "touch text.txt" a new file is created and stored on hd1.
+Now when you do "touch text.txt" a new file should be created and stored on hd1.
 
 Next perform a reboot.
 
@@ -279,7 +279,7 @@ Note that the mount command defaults to the root user and so you need to use sud
 
 ## Webcam
 
-The next step is to capture an image from a webcam and save it onto the USB disk drive.
+The next step is to capture an image from a webcam and save it onto the USB disk drive (hd1).
 
 To find the supported webcam resolutions use the command below.
 
@@ -293,7 +293,7 @@ This will list the YUYV and MPEG formats which are supported by the webcam. Assu
 fswebcam -r 640x480 test.jpg
 ```
 
-This will dump a captured image in the current folder.
+This will dump a captured image into a file called test.jpg in the current folder.
 
 The bash script below called "capture_usb.sh" shows how to capture an image from a webcam and save it to the webcam directory on USB hard drive (hd1). 
 
@@ -305,7 +305,9 @@ DATE=$(date +"%Y-%m-%d-%H-%M")
 fswebcam -r 640x480 -S 10 -F 16 /mnt/hd1/webcam/$DATE.jpg
 ```
 
-The DATE variable is used to time stamp each captured image so that images can be sorted and converted into a movie file. Some options have been used with fswebcam. The "-S 10" option skips the first 10 frames to let the webcam settle before capturing an image. The "-F 16" option captures 16 images in sequence and averages them into one. I found this produces a clearer image with an old webcam that I am using.
+The DATE variable is used to time stamp each captured image so that images can be sorted and then subsequently converted into a movie file. 
+
+Some options have been used with [fswebcam](https://manpages.debian.org/bookworm/fswebcam/fswebcam.1.en.html). The "-S 10" option skips the first 10 frames to let the webcam settle before capturing an image. The "-F 16" option sets the number of frames to capture to 16 images. These are captured in sequence and averaged into a final image to reduce noise and improve picture quality. I found using 16 frames produced a clearer image with the old webcam that I am using. This may not be required with other types of webcams.
 
 The script must have executable permission to run. Use "chmod" to make the script executable. 
 
@@ -371,13 +373,13 @@ echo moving video to videos directory
 mv $DATE.avi /mnt/hd1/videos
 ```
 
-This script is called makeavi_usb.sh and again must be executable. The scrip can be added as a cron job as shown below
+This script is called makeavi_usb.sh and again must be executable. The script can be added as a cron job as shown below.
 
 ```
 30 16 * * * /home/pi/makeavi_usb.sh > /dev/null 2>&1
 ```
 
-This creates the security webcam video at 4.30pm in the afternoon.
+In this example the security webcam video is created at 4.30pm in the afternoon.
 
 ## Deleting Webcam Images
 
@@ -424,7 +426,7 @@ This sets up the webcam security system to capture images every minute, make a v
 
 ## Tranfering Files
 
-The scp command can be used to copy files between a two computers e.g. a local computer and the  Raspberry Pi. You need to ensure that the ssh server on the local computer is listening on port 22 to use the scp command. This usually involves editing the ssh daemon (sshd) configuration file and removing the comment from the "#port 22" and then restarting the ssh daemon. 
+The [scp](https://manpages.debian.org/bookworm/openssh-client/scp.1.en.html) command can be used to copy files between a two computers e.g. a local computer and the Raspberry Pi. You need to ensure that the ssh server on the local computer is listening on port 22 to use the scp command. This usually involves editing the ssh daemon (sshd) configuration file and removing the comment from the line "#port 22" and then restarting the ssh daemon. 
 
 ```
 sudo micro /etc/ssh/sshd_config
@@ -438,7 +440,7 @@ If this does not work check that the listening socket is set to port 22
 sudo systemctl edit sshd.socket
 ```
 
-An example of how a file can be transferred is shown below.
+An example of how a video file can be transferred is shown below.
 
 ```
 cd /mnt/hd1/videos
@@ -447,7 +449,7 @@ scp 2025-01-07-13-26.avi username@192.168.0.34:/home/username/Videos
 
 ## Shutdown
 
-To shutdown the Raspberry Pi webcam security system use
+To shutdown the Raspberry Pi webcam security system use the command below.
 
 ```
 sudo shutdown -h now
@@ -455,14 +457,18 @@ sudo shutdown -h now
 
 ## Summary
 
-Once the webcam security system has been setup it can be left pretty much unattended just logging into the system to delete or transfer security videos.
+Once the webcam security system has been setup it can be left pretty much unattended during the day just logging into the system to delete or transfer security videos. The webcam can be attached to a window overlooking an entrance, garden area or driveway using a dash camera suction mount or mini camera tripod stand.
 
-There are other software applications such as [motion](https://motion-project.github.io/) which can be used to start capturing images when motion is detected but these are accessed through a web interface. The approach outlined here is a local webcam security system.
+There are other programs such as [motion](https://motion-project.github.io/) which can be used to start capturing images when motion is detected but these are accessed through a web interface. The approach outlined here is a local webcam security system.
 
 ## References
 
 [Raspberry Pi Foundation](https://www.raspberrypi.org/)
 
 [Connect a HardDrive USB Stick on a RaspberryPi From Terminal](https://www.youtube.com/watch?v=eQZdPlMH-X8)
+
+[fswebcam](https://github.com/fsphil/fswebcam)
+
+[fswebcam Manual](https://manpages.debian.org/bookworm/fswebcam/fswebcam.1.en.html)
 
 [Understanding Crontab in Linux with 20 Useful Examples for Scheduling Tasks](https://tecadmin.net/crontab-in-linux-with-20-examples-of-cron-schedule/)
