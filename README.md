@@ -8,7 +8,7 @@ Images are captured from the webcam using fswebcam and saved to a permanently mo
 
 ## Raspberry Pi OS Lite
 
-Use Raspberry Pi Imager to flash Raspberry Pi OS Lite (64-bit) onto a microSD card making sure SSH is enabled. Raspberry Pi Lite has no desktop and so you connect to the Pi via [SSH]([How to use SSH to connect to a remote server in Linux | ssh Command - GeeksforGeeks](https://www.geeksforgeeks.org/ssh-command-in-linux-with-examples/)). As the webcam images are going to be stored on a USB drive mounted as a hard drive you can use a small 32GB microSD card for the OS but make sure it is from reputable brand such as sandisk.
+Use Raspberry Pi Imager to flash Raspberry Pi OS Lite (64-bit) onto a microSD card making sure SSH is enabled. Raspberry Pi Lite has no desktop and so you connect to the Pi via [SSH](https://www.geeksforgeeks.org/ssh-command-in-linux-with-examples/). As the webcam images are going to be stored on a USB drive mounted as a hard drive you can use a small 32GB microSD card for the OS but make sure it is from reputable brand such as sandisk.
 
 ## SSH
 
@@ -275,7 +275,7 @@ To un-mount the USB drive you use the umount command as shown below.
 sudo umount /media/usb
 ```
 
-Note that the mount command defaults to the root user.
+Note that the mount command defaults to the root user and so you need to use sudo when copying files.
 
 ## Webcam
 
@@ -284,7 +284,7 @@ The next step is to capture an image from a webcam and save it onto the USB disk
 To find the supported webcam resolutions use the command below.
 
 ```
-v4l2-ctl --list-formats-ext | more
+fsv4l2-ctl --list-formats-ext | more
 ```
 
 This will list the YUYV and MPEG formats which are supported by the webcam. Assuming that 640x480 resolution is supported (most webcam support this resolution) you can capture a test image using the command below.
