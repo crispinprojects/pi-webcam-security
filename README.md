@@ -1,8 +1,8 @@
 # Raspberry Pi Webcam Security System
 
-A demonstration of how to setup a simple offline Raspberry Pi webcam security system.  The system consists of  a Raspberry Pi 4,  a usb webcam,  and a usb memory drive for storing webcam images and videos. The system is setup to capture and save webcam images every minute, convert images to video and schedule the deletion of images after a period of time.
+A demonstration of how to setup a simple local Raspberry Pi webcam security system.  The system consists of  a Raspberry Pi 4,  a usb webcam,  and a usb memory drive for storing webcam images and videos. The system is setup to capture and save webcam images every minute, convert images to video and schedule the deletion of images after a period of time.
 
-Images are captured from the webcam using fswebcam and saved to a permanently mounted USB hard drive.  Images are date and time stamped.  A cron job is setup to capture and save webcam images one per minute. A bash script is used to convert captured images to a video (avi) file. A bash is used to clear all dumped images from the USB drive and can be added as a cron job.
+Images are captured from the webcam using fswebcam and saved to a permanently mounted USB hard drive. Images are date and time stamped.  A cron job is setup to capture and save webcam images one per minute. A bash script is used to convert captured images to a video (avi) file. A bash is used to clear all dumped images from the USB drive and can be added as a cron job.
 
 ![](webcam.png) 
 
@@ -281,13 +281,19 @@ Note that the mount command defaults to the root user and so you need to use sud
 
 The next step is to capture an image from a webcam and save it onto the USB disk drive (hd1).
 
+Common webcam resolutions are:
+ 
+Standard Definition (SD) 4:3 aspect ratio (480p): 640x480
+Standard high definition (HD) 16:9 aspect ratio (720p): 1280x720 pixels
+Full high definition (FDH) 16:9 aspect ratio (1080p): 1920x1080 pixels
+
 To find the supported webcam resolutions use the command below.
 
 ```
-fsv4l2-ctl --list-formats-ext | more
+v4l2-ctl -d /dev/video0 --list-formats-ext
 ```
 
-This will list the YUYV and MPEG formats which are supported by the webcam. Assuming that 640x480 resolution is supported (most webcam support this resolution) you can capture a test image using the command below.
+This will list the YUYV and MPEG formats which are supported by the webcam. Assuming that 640x480 low (480p) resolution is supported (most webcam support this resolution) you can capture a test image using the command below.
 
 ```
 fswebcam -r 640x480 test.jpg
@@ -305,9 +311,9 @@ DATE=$(date +"%Y-%m-%d-%H-%M")
 fswebcam -r 640x480 -S 10 -F 16 /mnt/hd1/webcam/$DATE.jpg
 ```
 
-The DATE variable is used to time stamp each captured image so that images can be sorted and then subsequently converted into a movie file. 
+The DATE variable is used to time stamp each captured image so that images can be sorted and then subsequently converted into a movie file. Replace the 640x480 resolution with one appropriate for your webcam e.g. 1280x720 for a webcam that supports 720p.
 
-Some options have been used with [fswebcam](https://manpages.debian.org/bookworm/fswebcam/fswebcam.1.en.html). The "-S 10" option skips the first 10 frames to let the webcam settle before capturing an image. The "-F 16" option sets the number of frames to capture to 16 images. These are captured in sequence and averaged into a final image to reduce noise and improve picture quality. I found using 16 frames produced a clearer image with the old webcam that I am using. This may not be required with other types of webcams.
+Some options have been used with [fswebcam](https://manpages.debian.org/bookworm/fswebcam/fswebcam.1.en.html). The "-S 10" option skips the first 10 frames to let the webcam settle before capturing an image. The "-F 16" option sets the number of frames to capture to 16 images. These are captured in sequence and averaged into a final image to reduce noise and improve picture quality. I found that using 16 frames produced a clearer image with the old webcam that I am using but for other webcams using -F 2 will be sufficient.
 
 The script must have executable permission to run. Use "chmod" to make the script executable. 
 
@@ -457,7 +463,7 @@ sudo shutdown -h now
 
 ## Summary
 
-Once the webcam security system has been setup it can be left pretty much unattended during the day just logging into the system to delete or transfer security videos. The webcam can be attached to a window overlooking an entrance, garden area or driveway using a dash camera suction mount or mini camera tripod stand.
+Once the webcam security system has been setup it can be left pretty much unattended during the day just logging into the system to delete or transfer security videos. The webcam can be attached to a window overlooking an entrance, garden area or driveway using a suction mount, mini camera tripod stand or blu tack.
 
 There are other programs such as [motion](https://motion-project.github.io/) which can be used to start capturing images when motion is detected but these are accessed through a web interface. The approach outlined here is a local webcam security system.
 
