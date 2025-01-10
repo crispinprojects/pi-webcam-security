@@ -283,9 +283,11 @@ The next step is to capture an image from a webcam and save it onto the USB disk
 
 Common webcam resolutions are:
  
+```
 Standard Definition (SD) 4:3 aspect ratio (480p): 640x480
 Standard high definition (HD) 16:9 aspect ratio (720p): 1280x720 pixels
 Full high definition (FDH) 16:9 aspect ratio (1080p): 1920x1080 pixels
+```
 
 To find the supported webcam resolutions use the command below.
 
