@@ -2,7 +2,7 @@
 
 A demonstration of how to setup a simple local Raspberry Pi webcam security system.  The system consists of  a Raspberry Pi 4,  a usb webcam,  and a usb memory drive for storing webcam images and videos. The system is setup to capture and save webcam images every minute, convert images to video and schedule the deletion of images after a period of time.
 
-Images are captured from the webcam using fswebcam and saved to a permanently mounted USB hard drive. Images are date and time stamped.  A cron job is setup to capture and save webcam images one per minute. A bash script is used to convert captured images to a video (avi) file. A bash is used to clear all dumped images from the USB drive and can be added as a cron job.
+Images are captured from the webcam using [fswebcam](https://github.com/fsphil/fswebcam) and saved to a permanently mounted USB hard drive. Images are date and time stamped.  A cron job is setup to capture and save webcam images one per minute. A bash script is used to convert captured images to a video (avi) file. A bash is used to clear all dumped images from the USB drive and can be added as a cron job to run at a specific time. This is an example of a data capture and storage system.
 
 ![](webcam.png) 
 
